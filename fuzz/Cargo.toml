@@ -1,0 +1,22 @@
+[package]
+name = "lotto-fuzz"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+lotto = { path = ".." }
+
+[[bin]]
+name = "parse"
+path = "fuzz_targets/parse.rs"
+test = false
+doc = false
+bench = false
+
+# Its own workspace: cargo-fuzz builds it on nightly with sanitizers, apart from the app.
+[workspace]
