@@ -1,0 +1,99 @@
+[package]
+name = "lotto"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99.1"
+publish = false
+
+[dependencies]
+clap = { version = "4.6.7", default-features = false, features = [
+    "derive",
+    "error-context",
+    "help",
+    "std",
+    "usage",
+] }
+eyre = "0.6.12"
+# Safe vectorized newline search (runtime CPU dispatch inside the dependency).
+memchr = "2.7.6"
+rayon = "1.11"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.20", default-features = false, features = ["fmt"] }
+
+[target.'cfg(not(fuzzing))'.dependencies]
+tikv-jemallocator = "0.7.0"
+
+[dev-dependencies]
+# Temporary directories for test fixtures, removed when the test ends.
+tempfile = "3.27"
+# Property tests of the parsers; without forking or timeouts, which the tests do not use.
+proptest = { version = "1.12", default-features = false, features = ["std"] }
+criterion = { version = "0.8.2", default-features = false, features = [
+    "cargo_bench_support",
+    "html_reports",
+    "plotters",
+] }
+
+[lib]
+bench = false
+
+[[bin]]
+name = "lotto"
+bench = false
+doc = false
+
+[[bench]]
+name = "lotto"
+harness = false
+
+[[bench]]
+name = "percentiles"
+harness = false
+
+[lints.rust]
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+all = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+wildcard_imports = "deny"
+undocumented_unsafe_blocks = "deny"
+allow_attributes_without_reason = "deny"
+float_cmp = "deny"
+print_stderr = "warn"
+multiple_unsafe_ops_per_block = "warn"
+allow_attributes = "warn"
+wildcard_enum_match_arm = "warn"
+missing_docs_in_private_items = "warn"
+clone_on_ref_ptr = "warn"
+redundant_clone = "warn"
+large_stack_arrays = "warn"
+large_types_passed_by_value = "warn"
+trivially_copy_pass_by_ref = "warn"
+inline_always = "allow"
+module_name_repetitions = "allow"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+debug = "line-tables-only"
+strip = "none"
+incremental = false
+debug-assertions = false
+overflow-checks = false
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.profiling]
+inherits = "release"
